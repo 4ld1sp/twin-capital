@@ -95,7 +95,7 @@ function Card({ className, children, ...props }: React.HTMLAttributes<HTMLDivEle
   )
 }
 
-function Badge({ className, children, variant = 'default', ...props }: React.HTMLAttributes<HTMLSpanElement>) {
+function Badge({ className, children, variant = 'default', ...props }: { className?: string; variant?: 'default' | 'success' | 'warning' | 'destructive' | 'outline'; children: React.ReactNode } & React.HTMLAttributes<HTMLSpanElement>) {
   const variants = {
     default: "bg-gray-900 text-white",
     success: "bg-emerald-50 text-emerald-700 border border-emerald-200",
