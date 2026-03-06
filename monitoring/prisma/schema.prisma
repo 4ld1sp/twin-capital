@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USERS ====================
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  role      UserRole @default(DIRECTOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  COMMISSIONER
+  DIRECTOR
+  BOT
+}
+
+// ==================== DIVISIONS ====================
+
+model Division {
+  id                String         @id @default(cuid())
+  name              DivisionName
+  capitalAllocated  Decimal        @default(0) @db.Decimal(20, 2)
+  status            DivisionStatus @default(ACTIVE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  
+  bots              Bot[]
+  dailyPerformance  DailyPerformance[]
+}
+
+enum DivisionName {
+  TRADING
+  MEDIA
+  RESEARCH
+  RISK_MANAGEMENT
+}
+
+enum DivisionStatus {
+  ACTIVE
+  PAUSED
+  UNDER_REVIEW
+}
+
+// ==================== BOTS ====================
+
+model Bot {
+  id             String     @id @default(cuid())
+  name           String
+  divisionId     String
+  strategyType   String?
+  capitalAllocated Decimal   @default(0) @db.Decimal(20, 2)
+  status         BotStatus  @default(ACTIVE)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  
+  division       Division   @relation(fields: [divisionId], references: [id])
+  trades         Trade[]
+}
+
+enum BotStatus {
+  ACTIVE
+  PAUSED
+  STOPPED
+}
+
+// ==================== TRADES ====================
+
+model Trade {
+  id             String   @id @default(cuid())
+  botId          String
+  symbol         String
+  side           PositionSide
+  entryPrice     Decimal  @db.Decimal(20, 8)
+  exitPrice      Decimal? @db.Decimal(20, 8)
+  positionSize   Decimal  @db.Decimal(20, 8)
+  pnl            Decimal  @default(0) @db.Decimal(20, 8)
+  riskPercent    Decimal  @default(0) @db.Decimal(10, 4)
+  openedAt       DateTime @default(now())
+  closedAt       DateTime?
+  
+  bot            Bot      @relation(fields: [botId], references: [id])
+}
+
+enum PositionSide {
+  LONG
+  SHORT
+}
+
+// ==================== DAILY PERFORMANCE ====================
+
+model DailyPerformance {
+  id             String   @id @default(cuid())
+  divisionId     String
+  date           DateTime @db.Date
+  equity         Decimal  @db.Decimal(20, 2)
+  returnPercent  Decimal  @default(0) @db.Decimal(10, 4)
+  drawdown       Decimal  @default(0) @db.Decimal(10, 4)
+  realizedPnl    Decimal  @default(0) @db.Decimal(20, 8)
+  unrealizedPnl Decimal  @default(0) @db.Decimal(20, 8)
+  cashflow30d    Decimal  @default(0) @db.Decimal(20, 8)
+  createdAt      DateTime @default(now())
+  
+  division       Division @relation(fields: [divisionId], references: [id])
+
+  @@unique([divisionId, date])
+}
+
+// ==================== COMPANY PERFORMANCE ====================
+
+model CompanyPerformance {
+  id              String   @id @default(cuid())
+  date            DateTime @db.Date
+  totalEquity     Decimal  @db.Decimal(20, 2)
+  monthlyReturn   Decimal  @default(0) @db.Decimal(10, 4)
+  maxDrawdown    Decimal  @default(0) @db.Decimal(10, 4)
+  currentDrawdown Decimal  @default(0) @db.Decimal(10, 4)
+  cashflow30d    Decimal  @default(0) @db.Decimal(20, 2)
+  riskUsed       Decimal  @default(0) @db.Decimal(10, 4)
+  riskStatus     RiskStatus @default(NORMAL)
+  aumGrowth      Decimal  @default(0) @db.Decimal(10, 4)
+  activeUnits    Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@unique([date])
+}
+
+enum RiskStatus {
+  NORMAL
+  CAUTION
+  CRITICAL
+  KILL_SWITCH
+}
+
+// ==================== SOCIAL METRICS ====================
+
+model SocialMetrics {
+  id                 String   @id @default(cuid())
+  platform           Platform
+  date               DateTime @db.Date
+  followers          Int      @default(0)
+  followersGrowth    Int      @default(0)
+  engagementRate     Decimal  @default(0) @db.Decimal(10, 4)
+  contentFrequency   Int      @default(0)
+  affiliateRevenue   Decimal  @default(0) @db.Decimal(20, 2)
+  revenuePerPost     Decimal  @default(0) @db.Decimal(20, 2)
+  conversionRate     Decimal  @default(0) @db.Decimal(10, 4)
+  createdAt          DateTime @default(now())
+
+  @@unique([platform, date])
+}
+
+enum Platform {
+  TWITTER
+  LINKEDIN
+  YOUTUBE
+  TIKTOK
+  INSTAGRAM
+}
+
+// ==================== AUDIT LOG ====================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String
+  details   Json?
+  createdAt DateTime @default(now())
+}

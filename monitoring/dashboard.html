@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏢 Twin Capital - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #0a0a0f; 
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px 40px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #00d4ff; }
+        .badge { 
+            background: #00d4ff20; 
+            color: #00d4ff; 
+            padding: 5px 15px; 
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 30px 40px;
+        }
+        .stat-card {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #333;
+        }
+        .stat-card:hover { border-color: #00d4ff; }
+        .stat-label { color: #888; font-size: 14px; margin-bottom: 10px; }
+        .stat-value { font-size: 32px; font-weight: bold; }
+        .stat-value.green { color: #00ff88; }
+        .stat-value.red { color: #ff4757; }
+        .stat-change { font-size: 14px; margin-top: 5px; }
+        .stat-change.up { color: #00ff88; }
+        .stat-change.down { color: #ff4757; }
+        
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 0 40px 30px;
+        }
+        
+        /* Chart Card */
+        .chart-card {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #333;
+        }
+        .card-title { 
+            font-size: 18px; 
+            margin-bottom: 20px; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Table */
+        .table-card {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #333;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: #888; padding: 10px; font-weight: normal; }
+        td { padding: 12px 10px; border-top: 1px solid #333; }
+        .profit { color: #00ff88; }
+        .loss { color: #ff4757; }
+        
+        /* Unit Tabs */
+        .unit-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px 40px;
+        }
+        .unit-tab {
+            background: #1a1a2e;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .unit-tab:hover, .unit-tab.active {
+            background: #00d4ff20;
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+        
+        /* Status Indicators */
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-dot.active { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .status-dot.inactive { background: #ff4757; }
+        
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">🏢 Twin Capital</div>
+        <div class="badge">DIRECTOR: AI Assistant</div>
+    </div>
+    
+    <!-- Unit Tabs -->
+    <div class="unit-tabs">
+        <div class="unit-tab active">📈 Trading Bot</div>
+        <div class="unit-tab">📱 Social Media</div>
+        <div class="unit-tab">🔬 Research</div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">💰 Total Equity</div>
+            <div class="stat-value">$1,350.52</div>
+            <div class="stat-change up">↑ 2.5% (24h)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📊 Total PnL</div>
+            <div class="stat-value green">+$7.72</div>
+            <div class="stat-change up">Today</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">🎯 Win Rate</div>
+            <div class="stat-value">66.7%</div>
+            <div class="stat-change">Last 10 trades</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📉 Max Drawdown</div>
+            <div class="stat-value red">-2.1%</div>
+            <div class="stat-change">This week</div>
+        </div>
+    </div>
+    
+    <!-- Content -->
+    <div class="content-grid">
+        <div class="chart-card">
+            <div class="card-title">📈 Equity Curve</div>
+            <canvas id="equityChart" height="200"></canvas>
+        </div>
+        
+        <div class="table-card">
+            <div class="card-title">📋 Open Positions</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pair</th>
+                        <th>Side</th>
+                        <th>PnL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>BTCUSDT</td>
+                        <td><span class="status-dot active"></span>Long</td>
+                        <td class="profit">+$5.42</td>
+                    </tr>
+                    <tr>
+                        <td>SOLUSDT</td>
+                        <td><span class="status-dot inactive"></span>Short</td>
+                        <td class="loss">-$2.10</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Equity Chart
+        const ctx = document.getElementById('equityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Equity ($)',
+                    data: [1000, 1020, 1015, 1035, 1040, 1038, 1350],
+                    borderColor: '#00d4ff',
+                    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { grid: { color: '#333' }, ticks: { color: '#888' } },
+                    y: { grid: { color: '#333' }, ticks: { color: '#888' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
