@@ -1,0 +1,46 @@
+// Trade Collection Table for Prisma
+
+model Trade {
+  id              Int      @id @default(autoincrement())
+  entryDate       DateTime @db.Date
+  entryTime       String?
+  asset           String
+  entryPrice      Decimal  @db.Decimal(20, 8)
+  exitPrice       Decimal? @db.Decimal(20, 8)
+  positionSize    Decimal  @db.Decimal(20, 2)
+  positionQty     String?
+  side            String   // LONG / SHORT
+  leverage        Int      @default(1)
+  profitLossUsd  Decimal  @db.Decimal(20, 2) @default(0)
+  profitLossPct  Decimal  @db.Decimal(10, 4) @default(0)
+  timeframe       String   // 15m, 1H, 4H, 1D
+  marketCondition String   // Trending, Ranging, Volatile
+  signal          String?
+  notes           String?  @db.Text
+  status          String   // WIN, LOSS, OPEN
+  createdAt       DateTime @default(now())
+}
+
+// Example SQL for manual creation
+/*
+CREATE TABLE trades (
+  id SERIAL PRIMARY KEY,
+  entry_date DATE NOT NULL,
+  entry_time VARCHAR(5),
+  asset VARCHAR(20) NOT NULL,
+  entry_price DECIMAL(20,8) NOT NULL,
+  exit_price DECIMAL(20,8),
+  position_size DECIMAL(20,2),
+  position_qty VARCHAR(50),
+  side VARCHAR(10) NOT NULL,
+  leverage INT DEFAULT 1,
+  profit_loss_usd DECIMAL(20,2) DEFAULT 0,
+  profit_loss_pct DECIMAL(10,4) DEFAULT 0,
+  timeframe VARCHAR(5),
+  market_condition VARCHAR(20),
+  signal VARCHAR(50),
+  notes TEXT,
+  status VARCHAR(10) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+*/

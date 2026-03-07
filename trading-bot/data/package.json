@@ -1,0 +1,15 @@
+{
+  "name": "data",
+  "version": "1.0.0",
+  "description": "| Column | Description | Example | |--------|-------------|---------| | **#** | Trade number | 1 | | **Entry Date** | Tanggal entry (YYYY-MM-DD) | 2026-03-07 | | **Entry Time** | Waktu entry (HH:MM) | 14:30 | | **Asset** | Symbol trading | BTCUSDT | | **Entry Price** | Harga masuk | 67500.00 | | **Exit Price** | Harga keluar | 68000.00 | | **Position Size** | Size posisi ($ atau qty) | $100 | | **Position Qty** | Jumlah coin | 0.0015 BTC | | **Side** | LONG / SHORT | LONG | | **Leverage** | Leverage used | 5x | | **Profit/Loss ($)** | Profit/loss dalam USDT | +5.00 | | **Profit/Loss (%)** | Profit/loss dalam % | +5.00 | | **Timeframe** | TF: 15m, 1H, 4H, 1D | 4H | | **Market Condition** | Trending / Ranging / Volatile | Trending | | **Signal** | Sinyal entry | MA Cross | | **Notes** | Catatan tambahan | Breakout resistance | | **Status** | WIN / LOSS / OPEN | WIN |",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "googleapis": "^171.4.0"
+  }
+}

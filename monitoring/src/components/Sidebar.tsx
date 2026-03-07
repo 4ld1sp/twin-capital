@@ -14,7 +14,8 @@ import {
   Wallet,
   Bot,
   Shield,
-  Activity
+  Activity,
+  Key
 } from 'lucide-react'
 
 const navItems = [
@@ -23,6 +24,7 @@ const navItems = [
   { href: '/social', label: 'Social Media', icon: Users },
   { href: '/research', label: 'Research', icon: Search },
   { href: '/reports', label: 'Reports', icon: FileText },
+  { href: '/decrypt', label: 'Decrypt', icon: Key },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
